@@ -1,28 +1,28 @@
 package Commands.LeagueOfLegends.Champions;
 
 import Commands.BasicCommand;
+import JSON.JSONArray;
+import JSON.JSONObject;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 
 public class ListChampions extends BasicCommand {
-
+    private static final String API_KEY_PATH = "APIKey.ini";
+    private static final String URL_CHAMPION_DATA = "https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?api_key=";
     public void runCommand(String input){
-        File file = new File("Config/Champions");
-        String[] directories = file.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File current, String name) {
-                return new File(current, name).isDirectory();
+        try{
+            String key = Files.readAllLines(Paths.get(API_KEY_PATH)).get(0);
+            String json = readURL(URL_CHAMPION_DATA+key);
+            JSONArray championNames = new JSONObject(json).getJSONObject("data").names();
+            for(int i = 0; i < championNames.length(); i++){
+                println(championNames.get(i));
             }
-        });
-        System.out.print("> ");
-        for(int i = 0; i < directories.length; i++){
-            System.out.print("\""+directories[i]+"\"");
-            if(i < directories.length-1){
-                System.out.print(",");
-            }
+        }catch(IOException | IndexOutOfBoundsException e){
+            println("Missing API Key Config file. Place API Key in " + API_KEY_PATH);
         }
-        System.out.print("\n");
     }
 
     @Override
