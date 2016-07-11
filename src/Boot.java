@@ -1,13 +1,13 @@
 import Commands.BasicCommand;
+import Commands.LeagueOfLegends.Champions.ListChampions;
 import Commands.LeagueOfLegends.Champions.UpdateChampions;
 import Commands.LeagueOfLegends.LeagueRoot;
 
 public class Boot extends BasicCommand {
     private boolean end = false;
     public Boot(){
-        subcommands = new BasicCommand[2];
+        subcommands = new BasicCommand[1];
         subcommands[0] = new LeagueRoot();
-        subcommands[1] = new UpdateChampions();
         while(!end){
             //Get user input
             String input = getInput();
