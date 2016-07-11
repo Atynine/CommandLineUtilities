@@ -17,9 +17,7 @@ public class ListChampions extends BasicCommand {
             String key = Files.readAllLines(Paths.get(API_KEY_PATH)).get(0);
             String json = readURL(URL_CHAMPION_DATA+key);
             JSONArray championNames = new JSONObject(json).getJSONObject("data").names();
-            for(int i = 0; i < championNames.length(); i++){
-                println(championNames.get(i));
-            }
+            println(championNames.toString());
         }catch(IOException | IndexOutOfBoundsException e){
             println("Missing API Key Config file. Place API Key in " + API_KEY_PATH);
         }
