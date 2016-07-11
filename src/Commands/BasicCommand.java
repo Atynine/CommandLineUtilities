@@ -1,5 +1,11 @@
 package Commands;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Scanner;
 
 public abstract class BasicCommand {
@@ -66,6 +72,27 @@ public abstract class BasicCommand {
     public boolean validate(String input){
         if(input.startsWith(this.getCommandText())) return true;
         return false;
+    }
+    protected String readURL(String u){
+        println("Attempting to connect to " + u);
+        String text = "";
+        try{
+            URL url = new URL(u);
+            URLConnection connection = url.openConnection();
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            //Copy all text from opened URL to text variable
+            String line;
+            while((line = in.readLine()) != null){
+                text+=line;
+            }
+            in.close();
+        }catch(MalformedURLException e){
+            printError("Invalid URL: " + u);
+        }catch(IOException e){
+            printError("Could not connect to " + u);
+        }
+        return text;
     }
 
     public abstract String getCommandText();

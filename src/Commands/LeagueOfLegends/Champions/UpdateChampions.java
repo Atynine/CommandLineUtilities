@@ -145,27 +145,7 @@ public class UpdateChampions extends BasicCommand {
         }
     }
 
-    private String readURL(String u){
-        println("Attempting to connect to " + u);
-        String text = "";
-        try{
-            URL url = new URL(u);
-            URLConnection connection = url.openConnection();
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            //Copy all text from opened URL to text variable
-            String line;
-            while((line = in.readLine()) != null){
-                text+=line;
-            }
-            in.close();
-        }catch(MalformedURLException e){
-            printError("Invalid URL: " + u);
-        }catch(IOException e){
-            printError("Could not connect to " + u);
-        }
-        return text;
-    }
+
     @Override
     public String getCommandText() {
         return "update";
