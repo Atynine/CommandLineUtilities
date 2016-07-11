@@ -1,6 +1,8 @@
 package Commands.LeagueOfLegends.Champions;
 
 import Commands.BasicCommand;
+import JSON.JSONArray;
+import JSON.JSONObject;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -11,12 +13,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UpdateChampions extends BasicCommand {
     private static final String[] championNames = {"Aatrox","Ahri","Akali","Alistar","Amumu","Anivia","Annie","Ashe", "AurelionSol", "Azir", "Bard", "Blitzcrank", "Brand", "Braum", "Caitlyn", "Cassiopeia", "Chogath", "Corki", "Darius", "Diana", "DrMundo", "Draven", "Ekko", "Elise", "Evelynn", "Ezreal", "FiddleSticks", "Fiora", "Fizz", "Galio", "Gangplank", "Garen", "Gnar","Gragas", "Graves", "Hecarim", "Heimerdinger", "Illaoi", "Irelia", "Janna", "JarvanIV", "Jax", "Jayce", "Jhin", "Jinx", "Kalista", "Karma", "Karthus", "Kassadin", "Katarina", "Kayle", "Kennen", "KhaZix", "Kindred", "KogMaw", "Leblanc", "LeeSin", "Leona", "Lissandra", "Lucian", "Lulu", "Lux","Malphite", "Malzahar", "Maokai", "MasterYi", "MissFortune", "Mordekaiser","Morgana", "Nami", "Nasus","Nautilus", "Nidalee", "Nocturne", "Nunu", "Olaf", "Orianna", "Pantheon", "Poppy", "Quinn", "Rammus", "RekSai", "Renekton", "Rengar", "Riven", "Rumble", "Ryze", "Sejuani" , "Shaco", "Shen", "Shyvana", "Singed", "Sion", "Sivir", "Skarner", "Sona", "Soraka", "Swain", "Syndra", "TahmKench", "Taliyah", "Talon", "Taric", "Teemo", "Thresh", "Tristana","Trundle","Tryndamere","TwistedFate","Twitch","Udyr","Urgot","Varus","Vayne","VelKoz","Vi","Viktor","Vladimir","Volibear","Warwick","MonkeyKing","Xerath","XinZhao","Yasuo","Yorick","Zac","Zed","Ziggs","Zilean","Zyra"};
     private static final String baseChampionURL = "http://champion.gg/champion/";
     private static final int[] UTILITIES = {2003,2043,3363,3364,2139,2140,2138};
+
     public void runCommand(String input){
+        //Load champion names from API
+        List<String> championNames = getChampionNames();
+        if(championNames.size() == 0) return;
         println("Starting creation of item sets - This could take a few minutes");
         for(String championName : championNames){
             //Load Champion.gg data for this champion
@@ -48,7 +55,25 @@ public class UpdateChampions extends BasicCommand {
         println("> Finished updating item sets");
     }
 
-
+    private List<String> getChampionNames(){
+        final String API_KEY_PATH = "APIKey.ini";
+        final String URL_CHAMPION_DATA = "https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?api_key=";
+        try{
+            String key = Files.readAllLines(Paths.get(API_KEY_PATH)).get(0);
+            String json = readURL(URL_CHAMPION_DATA+key);
+            if(json.equals("")){
+                println("Could not load champion names from API");
+                return new ArrayList<>();
+            }
+            JSONArray championNames = new JSONObject(json).getJSONObject("data").names();
+            return championNames.toList().stream()
+                    .map(object -> (object != null ? object.toString() : null))
+                    .collect(Collectors.toList());
+        }catch(IOException | IndexOutOfBoundsException e){
+            println("Missing API Key Config file. Place API Key in " + API_KEY_PATH);
+        }
+        return new ArrayList<>();
+    }
     private void generateHighestWinPercent(String championName, String htmlText, String role){
         //Add header to json file
         ArrayList<String> lines = new ArrayList<>();
