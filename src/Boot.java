@@ -1,6 +1,4 @@
 import Commands.BasicCommand;
-import Commands.LeagueOfLegends.Champions.ListChampions;
-import Commands.LeagueOfLegends.Champions.UpdateChampions;
 import Commands.LeagueOfLegends.LeagueRoot;
 
 public class Boot extends BasicCommand {
